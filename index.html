@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Galería de Imágenes FSA 2025</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #0056b3;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .ver-imagen-btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .ver-imagen-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Galería de Imágenes FSA 2025</h1>
+        <p>Consulta y accede a las imágenes fácilmente.</p>
+
+        <table id="imagenesTable">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Fecha</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9aB0ZWqismzzvs8J6UlkNrTGRjEm_oqJE0szli1GcKU28rBXFtLzK1anR-Dq55m3WSTYshQYvsTO_/pub?gid=0&single=true&output=csv";
+
+            fetch(sheetURL)
+                .then(response => response.text())
+                .then(csvText => {
+                    const rows = csvText.trim().split("\n").map(row => row.split(","));
+                    const tbody = $("#imagenesTable tbody");
+
+                    rows.slice(1).forEach(row => {
+                        const nombre = row[0].trim();
+                        const fecha = row[1].trim();
+                        const url = row[2].trim();
+
+                        if (url) {
+                            const imagenHTML = `<a href="${url}" target="_blank" class="ver-imagen-btn">Ver imagen</a>`;
+                            const rowHTML = `
+                                <tr>
+                                    <td>${nombre}</td>
+                                    <td>${fecha}</td>
+                                    <td>${imagenHTML}</td>
+                                </tr>
+                            `;
+                            tbody.append(rowHTML);
+                        }
+                    });
+
+                    $("#imagenesTable").DataTable({
+                        pageLength: 10,
+                        language: {
+                            url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error("Error al cargar los datos:", error);
+                });
+        });
+    </script>
+
+</body>
+</html>
